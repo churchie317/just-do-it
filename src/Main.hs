@@ -14,12 +14,44 @@ import Data.Semigroup ((<>))
 import Data.Time.Clock
 import Data.Time.Format
 import GHC.Generics
-import Options.Applicative
+import Options.Applicative 
+-- import Parser
 import System.Directory (doesFileExist, getHomeDirectory)
 
 main :: IO ()
-main = do
-  putStrLn "hello world"
+main = run =<< execParser opts
+  where
+    opts = info (input <**> helper)
+      (fullDesc
+     <> progDesc "doing - Save yourself from later."
+     <> header "doing" )
+
+run :: Input -> IO ()
+run (Message text) = createTask text 
+run (Report) = do
+  tasks <- readTasks  
+  putStrLn (renderTaskGroups (groupTasks tasks))
+
+data Input
+  = Message String
+  | Report
+
+input :: Parser Input
+input = messageInput <|> reportInput
+
+messageInput :: Parser Input
+messageInput = Message <$> strOption
+  ( long "message"
+  <> short 'm'
+  <> metavar "TEXT"
+  <> help "Short message describing activity")
+
+reportInput :: Parser Input
+reportInput = flag' Report
+    ( long "report"
+    <> short 'r'
+    <> help "Number of days to show" )
+
 
 data TaskGroup = TaskGroup {
   groupTime :: UTCTime,
