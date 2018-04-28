@@ -15,7 +15,7 @@ import Data.Time.Clock
 import Data.Time.Format
 import GHC.Generics
 import Options.Applicative 
--- import Parser
+import Parser
 import System.Directory (doesFileExist, getHomeDirectory)
 
 main :: IO ()
@@ -31,27 +31,6 @@ run (Message text) = createTask text
 run (Report) = do
   tasks <- readTasks  
   putStrLn (renderTaskGroups (groupTasks tasks))
-
-data Input
-  = Message String
-  | Report
-
-input :: Parser Input
-input = messageInput <|> reportInput
-
-messageInput :: Parser Input
-messageInput = Message <$> strOption
-  ( long "message"
-  <> short 'm'
-  <> metavar "TEXT"
-  <> help "Short message describing activity")
-
-reportInput :: Parser Input
-reportInput = flag' Report
-    ( long "report"
-    <> short 'r'
-    <> help "Number of days to show" )
-
 
 data TaskGroup = TaskGroup {
   groupTime :: UTCTime,
@@ -113,7 +92,6 @@ mkTaskGroup :: [Task] -> Maybe TaskGroup
 mkTaskGroup tasks@((Task _ time):_) = Just $ TaskGroup time tasks
 mkTaskGroup _ = Nothing
 
-
 groupTasks :: [Task] -> [TaskGroup]
 groupTasks tasks =
   catMaybes $ map mkTaskGroup groupedTasks 
@@ -137,11 +115,3 @@ createTask text = do
   tasks <- readTasks
   task <- mkTask text
   saveTasks $ task : tasks
-
--- Tuesday, January 28th
--- - Wrote a haskell app
--- - Refactored Accountify again
--- 
--- Wednesday, January 29th
--- - Used the bathroom 5 times
--- - Refactored Accountify again

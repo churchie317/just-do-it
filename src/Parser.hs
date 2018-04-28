@@ -1,8 +1,9 @@
 module Parser 
-    ( Input
+    ( Input(..)
     , input
     ) where
 
+import Data.Semigroup ((<>))
 import Options.Applicative 
 
 data Input

@@ -1,7 +1,7 @@
 name:                doing
 version:             0.1.0.0
 -- synopsis:
--- description:
+description:         Save yourself from later.
 homepage:            https://github.com/githubuser/doing#readme
 license:             BSD3
 license-file:        LICENSE
