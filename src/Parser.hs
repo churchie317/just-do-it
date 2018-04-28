@@ -7,8 +7,8 @@ import qualified Data.Task as Task
 import Options.Applicative 
 
 data Input
-  = Message String
-  | Report
+    = Message String
+    | Report
 
 -- TODO: env flag for testing
 
@@ -30,10 +30,10 @@ input = messageInput <|> reportInput
 
 messageInput :: Parser Input
 messageInput = Message <$> strOption
-  ( long "message"
-  <> short 'm'
-  <> metavar "TEXT"
-  <> help "Short message describing activity" )
+    ( long "message"
+    <> short 'm'
+    <> metavar "TEXT"
+    <> help "Short message describing activity" )
 
 reportInput :: Parser Input
 reportInput = flag' Report
