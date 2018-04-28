@@ -4,23 +4,22 @@
 
 module Main where
 
-import GHC.Generics
 import Control.Monad (when)
 import Data.Aeson
-import Data.Maybe (fromMaybe, catMaybes)
-import Data.List (sortOn, groupBy, intercalate)
-import Data.Monoid
-import Data.Time.Clock
-import Data.Time.Format
-import System.Directory (doesFileExist, getHomeDirectory)
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString as B
+import Data.List (groupBy, intercalate, sortOn)
+import Data.Maybe (catMaybes, fromMaybe)
+import Data.Semigroup ((<>))
+import Data.Time.Clock
+import Data.Time.Format
+import GHC.Generics
+import Options.Applicative
+import System.Directory (doesFileExist, getHomeDirectory)
 
 main :: IO ()
 main = do
   putStrLn "hello world"
-
--- Task.hs
 
 data TaskGroup = TaskGroup {
   groupTime :: UTCTime,
@@ -91,7 +90,7 @@ groupTasks tasks =
      groupedTasks = groupBy groupTasks $ sortOn time tasks
 
 renderTaskGroups :: [TaskGroup] -> String
-renderTaskGroups = intercalate "\n\n" . map renderTaskGroup
+renderTaskGroups = intercalate "\n" . map renderTaskGroup
 
 renderTaskGroup :: TaskGroup -> String
 renderTaskGroup (TaskGroup time tasks) =
@@ -99,7 +98,7 @@ renderTaskGroup (TaskGroup time tasks) =
   : map renderTask tasks
 
 renderTask :: Task -> String
-renderTask (Task text _) = "- " <> text
+renderTask (Task text _) = "- " ++ text
 
 createTask :: String -> IO ()
 createTask text = do
