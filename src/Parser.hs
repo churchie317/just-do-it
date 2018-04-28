@@ -10,6 +10,8 @@ data Input
   = Message String
   | Report
 
+-- TODO: env flag for testing
+
 input :: Parser Input
 input = messageInput <|> reportInput
 
@@ -18,7 +20,7 @@ messageInput = Message <$> strOption
   ( long "message"
   <> short 'm'
   <> metavar "TEXT"
-  <> help "Short message describing activity")
+  <> help "Short message describing activity" )
 
 reportInput :: Parser Input
 reportInput = flag' Report

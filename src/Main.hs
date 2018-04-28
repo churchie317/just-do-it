@@ -24,13 +24,13 @@ main = run =<< execParser opts
     opts = info (input <**> helper)
       (fullDesc
      <> progDesc "doing - Save yourself from later."
-     <> header "doing" )
+     <> header "Reminding you of what's important since 2018." )
 
 run :: Input -> IO ()
 run (Message text) = createTask text 
 run (Report) = do
   tasks <- readTasks  
-  putStrLn (renderTaskGroups (groupTasks tasks))
+  putStrLn . renderTaskGroups $ groupTasks tasks
 
 data TaskGroup = TaskGroup {
   groupTime :: UTCTime,
@@ -45,26 +45,26 @@ data Task = Task {
 instance ToJSON Task
 instance FromJSON Task
 
-databaseFilePath :: IO FilePath
-databaseFilePath = do
-  home <- getHomeDirectory
-  return $ home ++ "/.doing_data"
+-- Prepends Task to List of Tasks and serializes ot disk
+createTask :: String -> IO ()
+createTask text = do
+  tasks <- readTasks
+  task <- mkTask text
+  saveTasks $ task : tasks
 
-createDatabase :: IO ()
-createDatabase = do
+-- Make Task from text
+mkTask :: String -> IO Task 
+mkTask text = do
+  utcTime <- getCurrentTime
+  return $ Task text utcTime
+
+-- Serializes list of tasks to disk
+saveTasks :: [Task] -> IO ()
+saveTasks tasks = do
   path <- databaseFilePath
-  writeFile path ""
+  L.writeFile path $ encode tasks
 
-databaseExists :: IO Bool
-databaseExists =
-  databaseFilePath >>= doesFileExist
-
-confirmDatabase :: IO ()
-confirmDatabase = do
-  exists <- databaseExists
-  when (not exists) createDatabase
-
--- Reads the tasks from disk
+-- Reads list of tasks from disk
 readTasks :: IO [Task]
 readTasks = do
   confirmDatabase
@@ -72,16 +72,27 @@ readTasks = do
   maybeTasks <- fmap decodeStrict $ B.readFile path
   return $ fromMaybe [] maybeTasks
 
--- Writes the tasks to disk
-saveTasks :: [Task] -> IO ()
-saveTasks tasks = do
-  path <- databaseFilePath
-  L.writeFile path $ encode tasks
+renderTaskGroups :: [TaskGroup] -> String
+renderTaskGroups = intercalate "\n" . map renderTaskGroup
 
-mkTask :: String -> IO Task 
-mkTask text = do
-  utcTime <- getCurrentTime
-  return $ Task text utcTime
+confirmDatabase :: IO ()
+confirmDatabase = do
+  exists <- databaseExists
+  when (not exists) createDatabase
+
+databaseFilePath :: IO FilePath
+databaseFilePath = do
+  home <- getHomeDirectory
+  return $ home ++ "/.doing_data"
+
+databaseExists :: IO Bool
+databaseExists =
+  databaseFilePath >>= doesFileExist
+
+createDatabase :: IO ()
+createDatabase = do
+  path <- databaseFilePath
+  writeFile path ""
 
 -- Formats a list of tasks into a string
 showTasks :: [Task] -> String
@@ -99,9 +110,6 @@ groupTasks tasks =
      groupTasks (Task _ t1) (Task _ t2) = utctDay t1 == utctDay t2
      groupedTasks = groupBy groupTasks $ sortOn time tasks
 
-renderTaskGroups :: [TaskGroup] -> String
-renderTaskGroups = intercalate "\n" . map renderTaskGroup
-
 renderTaskGroup :: TaskGroup -> String
 renderTaskGroup (TaskGroup time tasks) =
   intercalate "\n" $ formatTime defaultTimeLocale "%A, %B %e" time
@@ -109,9 +117,3 @@ renderTaskGroup (TaskGroup time tasks) =
 
 renderTask :: Task -> String
 renderTask (Task text _) = "- " ++ text
-
-createTask :: String -> IO ()
-createTask text = do
-  tasks <- readTasks
-  task <- mkTask text
-  saveTasks $ task : tasks
