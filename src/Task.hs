@@ -7,7 +7,7 @@ module Task
 
 import qualified Database
 import Data.List (groupBy, intercalate, sortOn)
-import Data.Maybe (catMaybes, mapMaybe, fromMaybe)
+import Data.Maybe (mapMaybe, fromMaybe)
 import Data.Task
 import Data.Time.Clock 
 import Data.Time.Format (defaultTimeLocale, formatTime)
