@@ -15,7 +15,7 @@ import System.Directory (doesFileExist, getHomeDirectory)
 filename :: String
 filename = "/.doing_data"
 
--- Reads list of tasks from disk
+-- Reads List of Task from disk
 readTasks :: IO [Task]
 readTasks = do
     confirmOrCreateDatabase
@@ -23,7 +23,7 @@ readTasks = do
     maybeTasks <- decodeStrict <$> B.readFile path
     return $ fromMaybe [] maybeTasks
 
--- Serializes list of tasks to disk
+-- Serializes List of Task to disk
 writeTasks :: [Task] -> IO ()
 writeTasks tasks = do
     path <- Database.filepath
