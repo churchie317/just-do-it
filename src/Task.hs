@@ -5,9 +5,9 @@ module Task
     , showTasks
     ) where
 
-import qualified Database
+import Database (readTasks, writeTasks)
 import Data.List (groupBy, intercalate, sortOn)
-import Data.Maybe (mapMaybe, fromMaybe)
+import Data.Maybe (mapMaybe)
 import Data.Task
 import Data.Time.Clock 
 import Data.Time.Format (defaultTimeLocale, formatTime)
@@ -19,13 +19,13 @@ timeStringFormat = "%A, %B %e"
 -- Prepends Task to List of Task and serializes to disk
 createTask :: String -> IO ()
 createTask text = do
-    tasks <- Database.readTasks
+    tasks <- readTasks
     task <- mkTask text
-    Database.writeTasks $ task : tasks
+    writeTasks $ task : tasks
 
 -- Reads List of Task from disk and pretty prints them to console
 showTasks :: IO ()
-showTasks = putStrLn =<< renderTaskGroups . groupTasks <$> Database.readTasks
+showTasks = putStrLn =<< renderTaskGroups . groupTasks <$> readTasks
 
 -- Groups List of Task into List of TaskGroup by date
 groupTasks :: [Task] -> [TaskGroup]
