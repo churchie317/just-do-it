@@ -1,8 +1,5 @@
 module Database
-    ( confirmOrCreateDatabase
-    , createFrom
-    , filepath
-    , readTasks
+    ( readTasks
     , writeTasks
     ) where
 
