@@ -11,6 +11,7 @@ import Data.Maybe (catMaybes, fromMaybe)
 import Data.Task 
 import System.Directory (doesFileExist, getHomeDirectory)
 
+-- The file name where application data will be written
 filename :: String
 filename = "/.doing_data"
 
@@ -28,11 +29,14 @@ writeTasks tasks = do
     path <- Database.filepath
     L.writeFile path $ encode tasks
 
+-- Confirms existence of data store: returns if found; 
+-- otherwise creates store
 confirmOrCreateDatabase :: IO ()
 confirmOrCreateDatabase = do
     exists <- doesDatabaseExist
     unless exists <$> createFrom =<< filepath 
 
+-- Concatenates file name to Home directory
 filepath :: IO FilePath
 filepath = flip (++) filename <$> getHomeDirectory
 
