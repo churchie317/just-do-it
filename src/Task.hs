@@ -33,11 +33,11 @@ groupTasks :: [Task] -> [TaskGroup]
 groupTasks tasks =
     mapMaybe mkTaskGroup groupedTasks
     where
-        groupedTasks = groupBy isSameDay $ sortOn time tasks
+        groupedTasks = groupBy isSameDayTask $ sortOn time tasks
 
 -- Compares two tasks: returns True if same day; otherwise False
-isSameDay :: Task -> Task -> Bool
-isSameDay Task{time=t1} Task{time=t2} = utctDay t1 == utctDay t2
+isSameDayTask :: Task -> Task -> Bool
+isSameDayTask Task{time=t1} Task{time=t2} = utctDay t1 == utctDay t2
 
 mkTask :: String -> IO Task 
 mkTask text = Task text <$> getCurrentTime
