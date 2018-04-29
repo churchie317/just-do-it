@@ -3,7 +3,7 @@ module Parser
     ) where
 
 import Data.Semigroup ((<>))
-import qualified Data.Task as Task
+import Task
 import Options.Applicative 
 
 data Input
