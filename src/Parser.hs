@@ -16,8 +16,8 @@ run :: IO ()
 run = handleOpts =<< execParser opts
 
 handleOpts :: Input -> IO ()
-handleOpts (Message text) = Task.create text 
-handleOpts Report = Task.show 
+handleOpts (Message text) = createTask text 
+handleOpts Report = showTasks 
 
 opts :: ParserInfo Input
 opts = info (input <**> helper)

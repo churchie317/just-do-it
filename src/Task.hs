@@ -1,8 +1,8 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Task 
-    ( create
-    , show
+    ( createTask
+    , showTasks
     ) where
 
 import qualified Database
@@ -11,22 +11,21 @@ import Data.Maybe (catMaybes, mapMaybe, fromMaybe)
 import Data.Task
 import Data.Time.Clock 
 import Data.Time.Format (defaultTimeLocale, formatTime)
-import Prelude hiding (show)
 
 -- Date printing format
 timeStringFormat :: String
 timeStringFormat = "%A, %B %e"
 
 -- Prepends Task to List of Task and serializes to disk
-create :: String -> IO ()
-create text = do
+createTask :: String -> IO ()
+createTask text = do
     tasks <- Database.readTasks
     task <- mkTask text
     Database.writeTasks $ task : tasks
 
 -- Reads List of Task from disk and pretty prints them to console
-show :: IO ()
-show = putStrLn =<< renderTaskGroups . groupTasks <$> Database.readTasks
+showTasks :: IO ()
+showTasks = putStrLn =<< renderTaskGroups . groupTasks <$> Database.readTasks
 
 -- Groups List of Task into List of TaskGroup by date
 groupTasks :: [Task] -> [TaskGroup]
