@@ -1,26 +1,39 @@
 module Parser 
-    ( Input(..)
-    , input
+    ( run
     ) where
 
 import Data.Semigroup ((<>))
+import Task
 import Options.Applicative 
 
 data Input
-  = Message String
-  | Report
+    = Message String
+    | Report
 
 -- TODO: env flag for testing
+
+run :: IO ()
+run = handleOpts =<< execParser opts
+
+handleOpts :: Input -> IO ()
+handleOpts (Message text) = createTask text 
+handleOpts Report = showTasks 
+
+opts :: ParserInfo Input
+opts = info (input <**> helper)
+    ( fullDesc
+    <> progDesc "doing - Save yourself from later."
+    <> header "Reminding you of what's important since 2018." )
 
 input :: Parser Input
 input = messageInput <|> reportInput
 
 messageInput :: Parser Input
 messageInput = Message <$> strOption
-  ( long "message"
-  <> short 'm'
-  <> metavar "TEXT"
-  <> help "Short message describing activity" )
+    ( long "message"
+    <> short 'm'
+    <> metavar "TEXT"
+    <> help "Short message describing activity" )
 
 reportInput :: Parser Input
 reportInput = flag' Report
