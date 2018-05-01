@@ -13,7 +13,7 @@ data Input
 -- TODO: env flag for testing
 
 run :: IO ()
-run = handleOpts =<< execParser opts
+run = execParser opts >>= handleOpts 
 
 handleOpts :: Input -> IO ()
 handleOpts (Message text) = createTask text 
