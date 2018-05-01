@@ -3,23 +3,27 @@ module Parser
     ) where
 
 import Data.Semigroup ((<>))
-import Task
+import Task (createTask, showNTasks)
 import Options.Applicative 
+import Options.Applicative.Help (bold)
 
 data Input
     = Message String
-    | Report
+    | Report Int
 
 -- TODO: env flag for testing
 
 run :: IO ()
-run = execParser opts >>= program 
+run = execParserWithPrefs opts >>= program 
+
+execParserWithPrefs :: ParserInfo Input -> IO Input
+execParserWithPrefs = customExecParser $ prefs showHelpOnEmpty
 
 opts :: ParserInfo Input
 opts = info (input <**> helper)
     ( fullDesc
-    <> progDesc "doing - Save yourself from later."
-    <> header "Reminding you of what's important since 2018." )
+    <> header "doing - Save yourself from later"
+    <> progDesc "A snippets tracker for ideas, tasks, and TODOs" )
 
 input :: Parser Input
 input = messageInput <|> reportInput
@@ -29,14 +33,17 @@ messageInput = Message <$> strOption
     ( long "message"
     <> short 'm'
     <> metavar "TEXT"
+    <> style bold
     <> help "Short message describing activity" )
 
 reportInput :: Parser Input
-reportInput = flag' Report
-    ( long "report"
+reportInput = Report <$> option auto
+    ( long "report-last"
     <> short 'r'
-    <> help "Number of days to show" )
+    <> metavar "INT"
+    <> style bold
+    <> help "Number of days of snippets to show from current date" )
 
 program :: Input -> IO ()
 program (Message text) = createTask text 
-program Report = showTasks 
+program (Report n) = showNTasks n

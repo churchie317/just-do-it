@@ -2,15 +2,15 @@
 
 module Task 
     ( createTask
-    , showTasks
+    , showNTasks
     ) where
 
-import Database (readTasks, writeTasks)
 import Data.List (groupBy, intercalate, sortOn)
 import Data.Maybe (mapMaybe)
 import Data.Task
 import Data.Time.Clock 
 import Data.Time.Format (defaultTimeLocale, formatTime)
+import Database (readTasks, writeTasks)
 
 -- Date printing format
 timeStringFormat :: String
@@ -24,8 +24,9 @@ createTask text = do
     writeTasks $ task : tasks
 
 -- Reads List of Task from disk and pretty prints them to console
-showTasks :: IO ()
-showTasks = putStrLn =<< renderTaskGroups . groupTasks <$> readTasks
+showNTasks :: Int -> IO ()
+showNTasks n = 
+    putStrLn =<< renderTaskGroups . take n . reverse . groupTasks <$> readTasks
 
 -- Groups List of Task into List of TaskGroup by date
 groupTasks :: [Task] -> [TaskGroup]
