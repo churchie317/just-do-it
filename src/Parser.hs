@@ -13,11 +13,7 @@ data Input
 -- TODO: env flag for testing
 
 run :: IO ()
-run = execParser opts >>= handleOpts 
-
-handleOpts :: Input -> IO ()
-handleOpts (Message text) = createTask text 
-handleOpts Report = showTasks 
+run = execParser opts >>= program 
 
 opts :: ParserInfo Input
 opts = info (input <**> helper)
@@ -40,3 +36,7 @@ reportInput = flag' Report
     ( long "report"
     <> short 'r'
     <> help "Number of days to show" )
+
+program :: Input -> IO ()
+program (Message text) = createTask text 
+program Report = showTasks 
