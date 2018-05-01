@@ -38,7 +38,7 @@ confirmOrCreateDatabase = do
 
 -- Concatenates file name to Home directory
 filepath :: IO FilePath
-filepath = flip (++) filename <$> getHomeDirectory
+filepath = (++filename)  <$> getHomeDirectory
 
 doesDatabaseExist :: IO Bool
 doesDatabaseExist = doesFileExist =<< filepath
